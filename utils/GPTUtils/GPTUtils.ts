@@ -48,7 +48,7 @@ export class GPTUtils {
             {
               type: "image_url",
               image_url: {
-                url: imageUrl,
+                url: imageUrl.split("?")[0],
               },
             },
           ],

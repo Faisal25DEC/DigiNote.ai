@@ -1,5 +1,5 @@
 export const FileService = {
-  uploadImage: (file: any) => {
+  uploadImage: (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     return fetch("mock", {
