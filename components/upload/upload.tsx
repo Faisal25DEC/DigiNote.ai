@@ -2,6 +2,7 @@ import { JSX, SVGProps } from "react";
 import { useRecoilState } from "recoil";
 import {
   currentImageUrlAtom,
+  currentPdfHtmlAtom,
   editorContentAtom,
   imageTranscriptionLoadingAtom,
   renderEditorAtom,
@@ -15,11 +16,12 @@ export default function Upload() {
   const [, setImageTranscriptionLoading] = useRecoilState(
     imageTranscriptionLoadingAtom
   );
-
+  const [, setCurrentPdfHtml] = useRecoilState(currentPdfHtmlAtom);
   const getImageTranscription = async (url: string) => {
     console.log(url);
     setImageTranscriptionLoading(true);
     const res = await axios.post("/api/transcribe", { imageUrl: url });
+    setCurrentPdfHtml(res.data.htmlString);
     return res.data.markdownString;
   };
 

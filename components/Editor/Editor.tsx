@@ -8,8 +8,6 @@ import { useEffect } from "react";
 import { uploadFile } from "@/services/file/file.service";
 import { Button } from "../ui/button";
 import useDownloadPdf from "@/hooks/useDownloadPdf/useDownloadPdf";
-import { currentPdfHtmlAtom } from "@/store/atoms/home/editor";
-import { useSetRecoilState } from "recoil";
 
 interface EditorProps {
   onChange: (value: string) => void;
@@ -18,8 +16,6 @@ interface EditorProps {
 }
 
 const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
-  const setCurrentPdfHtml = useSetRecoilState(currentPdfHtmlAtom);
-
   const handleUpload = async (file: File) => {
     try {
       const res = await uploadFile(file);
@@ -57,11 +53,9 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   };
 
   const onDownloadPdf = async () => {
-    const markdown = await editor.blocksToHTMLLossy(editor.document);
-    setCurrentPdfHtml(markdown);
     setTimeout(() => {
       downloadPdf({ pdfDomElementId: "pdf-element" });
-    }, 2000);
+    }, 500);
   };
 
   return (
