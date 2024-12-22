@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const ImageTranscription = z.object({
   markdownString: z.string(),
+  htmlString: z.string(),
 });
 export class GPTUtils {
   openaiClient = new OpenAI({

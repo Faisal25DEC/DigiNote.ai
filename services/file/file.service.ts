@@ -23,10 +23,13 @@ export const uploadFile = async (file: File) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch("mock", {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      "https://api-gateway-dev.permian.ai/api/v1/upload-pdf",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to upload file");

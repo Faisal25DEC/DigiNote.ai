@@ -1,15 +1,50 @@
-import { uploadImage } from "@/firebase/firebase";
-import { currentImageUrlAtom } from "@/store/atoms/atoms";
 import { JSX, SVGProps } from "react";
 import { useRecoilState } from "recoil";
+import {
+  currentImageUrlAtom,
+  editorContentAtom,
+  imageTranscriptionLoadingAtom,
+  renderEditorAtom,
+} from "@/store/atoms/home/editor";
+import axios from "axios";
 
 export default function Upload() {
   const [, setCurrentImageUrl] = useRecoilState(currentImageUrlAtom);
-  const uploadFile = async (file: File) => {
-    const url = await uploadImage(file);
-    setCurrentImageUrl(url);
+  const [, setContent] = useRecoilState(editorContentAtom);
+  const [, setRenderEditor] = useRecoilState(renderEditorAtom);
+  const [, setImageTranscriptionLoading] = useRecoilState(
+    imageTranscriptionLoadingAtom
+  );
+
+  const getImageTranscription = async (url: string) => {
     console.log(url);
+    setImageTranscriptionLoading(true);
+    const res = await axios.post("/api/transcribe", { imageUrl: url });
+    return res.data.markdownString;
   };
+
+  const getImageTranscriptionHandler = async (url: string) => {
+    if (url) {
+      const resopnse = getImageTranscription(url);
+      resopnse.then((data) => {
+        setImageTranscriptionLoading(false);
+        setContent(data);
+        setRenderEditor(true);
+      });
+    }
+  };
+
+  const uploadFileHandler = async (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Url = reader.result as string;
+      console.log(base64Url);
+      getImageTranscriptionHandler(base64Url);
+      setCurrentImageUrl(base64Url);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="flex justify-center pt-5">
       <div className="flex flex-col justify-center space-y-4">
@@ -20,7 +55,9 @@ export default function Upload() {
           </p>
           <input
             type="file"
-            onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
+            onChange={(e) =>
+              e.target.files && uploadFileHandler(e.target.files[0])
+            }
             className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           />
         </div>
